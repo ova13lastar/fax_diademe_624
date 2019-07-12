@@ -10,8 +10,8 @@
 ; AutoIt3Wrapper
 #AutoIt3Wrapper_Res_ProductName=fax_diademe_624
 #AutoIt3Wrapper_Res_Description=Permet d'installer l'imprimante virtuelle PDFCreator : fax_diademe_624
-#AutoIt3Wrapper_Res_ProductVersion=1.0.0
-#AutoIt3Wrapper_Res_FileVersion=1.0.0
+#AutoIt3Wrapper_Res_ProductVersion=1.0.1
+#AutoIt3Wrapper_Res_FileVersion=1.0.1
 #AutoIt3Wrapper_Res_CompanyName=CNAMTS/CPAM_ARTOIS/APPLINAT
 #AutoIt3Wrapper_Res_LegalCopyright=yann.daniel@assurance-maladie.fr
 #AutoIt3Wrapper_Res_Language=1036
@@ -96,7 +96,7 @@ _Main()
 ; Parameters ....:
 ; Return values .:
 ; Author ........: yann.daniel@assurance-maladie.fr
-; Last Modified .: 07/06/2019
+; Last Modified .: 12/07/2019
 ; Notes .........:
 ;================================================================================================================================
 Func _Main()
@@ -107,13 +107,20 @@ Func _Main()
 		_YDLogger_Log("Suppression ancienne imprimante " & $g_sOldPdfCreatorPrinter, $sFuncName)		
 	Else
 		_YDLogger_Log("Ancienne imprimante " & $g_sOldPdfCreatorPrinter & " non trouvee", $sFuncName)
-	EndIf	
+	EndIf
 	;------------------------------
-	; On installe l'imprimante PDFCreator si pas deja installee pour cet utilisateur
+	; On installe l'imprimante PDFCreator
 	If Not _IsPdfCreatorPrinterInstalled($g_sPdfCreatorPrinter) And $g_sLoggerUserName <> "" Then 
 		_YDLogger_Log("Imprimante " & $g_sPdfCreatorPrinter & " non installee !", $sFuncName)
 		_InstallPdfCreatorPrinter()
+	Else
+		_YDLogger_Log("Imprimante " & $g_sPdfCreatorPrinter & " deja installee : Suppression ...", $sFuncName)
+		_DeleteOldPdfCreatorPrinterIfInstalled($g_sPdfCreatorPrinter)
+		_YDLogger_Log("Imprimante " & $g_sPdfCreatorPrinter & " deja installee : Réinstallation ...", $sFuncName)
+		_InstallPdfCreatorPrinter()
 	EndIf
+	;------------------------------
+	; On verifie que l'imprimante PDFCreator s'est correctement installee
 	If _IsPdfCreatorPrinterInstalled($g_sPdfCreatorPrinter) Then 
 		_YDLogger_Log("Imprimante " & $g_sPdfCreatorPrinter & " installee pour utilisateur : " & $g_sLoggerUserName, $sFuncName)
 	Else
@@ -258,7 +265,7 @@ Func _InstallPdfCreatorPrinter()
 	If RegWrite('HKCU\Software\PDFCreator\Profiles\' & $g_sPdfCreatorPrinter & '\Printing\Formats\Bitmap\Colors', 'RAWColorsCount','REG_SZ','0') <> 1 Then $iRegError += 1
 	If RegWrite('HKCU\Software\PDFCreator\Profiles\' & $g_sPdfCreatorPrinter & '\Printing\Formats\Bitmap\Colors', 'RAWResolution','REG_SZ','150') <> 1 Then $iRegError += 1
 	If RegWrite('HKCU\Software\PDFCreator\Profiles\' & $g_sPdfCreatorPrinter & '\Printing\Formats\Bitmap\Colors', 'SVGResolution','REG_SZ','72') <> 1 Then $iRegError += 1
-	If RegWrite('HKCU\Software\PDFCreator\Profiles\' & $g_sPdfCreatorPrinter & '\Printing\Formats\Bitmap\Colors', 'TIFFColorscount','REG_SZ','0') <> 1 Then $iRegError += 1
+	If RegWrite('HKCU\Software\PDFCreator\Profiles\' & $g_sPdfCreatorPrinter & '\Printing\Formats\Bitmap\Colors', 'TIFFColorscount','REG_SZ','6') <> 1 Then $iRegError += 1
 	If RegWrite('HKCU\Software\PDFCreator\Profiles\' & $g_sPdfCreatorPrinter & '\Printing\Formats\Bitmap\Colors', 'TIFFResolution','REG_SZ','150') <> 1 Then $iRegError += 1
 	If RegWrite('HKCU\Software\PDFCreator\Profiles\' & $g_sPdfCreatorPrinter & '\Printing\Formats\PDF\Colors', 'PDFColorsCMYKToRGB','REG_SZ','0') <> 1 Then $iRegError += 1
 	If RegWrite('HKCU\Software\PDFCreator\Profiles\' & $g_sPdfCreatorPrinter & '\Printing\Formats\PDF\Colors', 'PDFColorsColorModel','REG_SZ','1') <> 1 Then $iRegError += 1
