@@ -10,8 +10,8 @@
 ; AutoIt3Wrapper
 #AutoIt3Wrapper_Res_ProductName=fax_diademe_624
 #AutoIt3Wrapper_Res_Description=Permet d'installer l'imprimante virtuelle PDFCreator : fax_diademe_624
-#AutoIt3Wrapper_Res_ProductVersion=1.0.2
-#AutoIt3Wrapper_Res_FileVersion=1.0.2
+#AutoIt3Wrapper_Res_ProductVersion=1.0.4
+#AutoIt3Wrapper_Res_FileVersion=1.0.4
 #AutoIt3Wrapper_Res_CompanyName=CNAMTS/CPAM_ARTOIS/APPLINAT
 #AutoIt3Wrapper_Res_LegalCopyright=yann.daniel@assurance-maladie.fr
 #AutoIt3Wrapper_Res_Language=1036
@@ -79,7 +79,6 @@ Global $g_sSiteNetworkPath = ""
 ;------------------------------
 ; On recupere les valeurs de conf.ini
 Global $g_sPdfCreatorPrinter = _YDTool_GetAppConfValue("general", "printer")
-Global $g_sUninstall = _YDTool_GetAppConfValue("general", "uninstall")
 Global $g_sUncPath = _YDTool_GetAppConfValue("general", "uncpath")
 ;------------------------------
 ; On recupere d autres variables globales
@@ -87,7 +86,7 @@ Global $g_sLoggerUserName = _YDTool_GetHostLoggedUserName(@ComputerName)
 _YDLogger_Var("$g_sLoggerUserName", $g_sLoggerUserName)
 Global $g_sOldPdfCreatorPrinter = "Vers Fax diademe"
 _YDLogger_Var("$g_sOldPdfCreatorPrinter", $g_sOldPdfCreatorPrinter)
-Global $g_sOSArchitecture = @CPUArch
+Global $g_sOSArchitecture = (@OSVersion = "WIN_7") ? "X86" : "X64"
 _YDLogger_Var("$g_sOSArchitecture", $g_sOSArchitecture)
 ;------------------------------
 _Main()
@@ -204,7 +203,7 @@ EndFunc
 ; Return values .: Success      - True
 ;                  Failure      - False
 ; Author ........: yann.daniel@assurance-maladie.fr
-; Last Modified .: 07/06/2019
+; Last Modified .: 28/09/2020
 ; Notes .........:
 ;================================================================================================================================
 Func _InstallPdfCreatorPrinter()
@@ -227,7 +226,7 @@ Func _InstallPdfCreatorPrinter()
 	$sRegName = 'HKCU_add_profile'
 	$iRegError = 0
 	Local $sRegData = 'Microsoft Word - |\.docx|\.doc|\Microsoft Excel - |\.xlsx|\.xls|\Microsoft PowerPoint - |\.pptx|\.ppt|'
-		If RegWrite('HKCU\Software\PDFCreator\Profiles\' & $g_sPdfCreatorPrinter & '\Ghostscript', 'DirectoryGhostscriptBinaries','REG_SZ','C:\' & $sProgramFiles & '\PDFCreator\GS9.05\gs9.05\Bin\') <> 1 Then $iRegError += 1
+	If RegWrite('HKCU\Software\PDFCreator\Profiles\' & $g_sPdfCreatorPrinter & '\Ghostscript', 'DirectoryGhostscriptBinaries','REG_SZ','C:\' & $sProgramFiles & '\PDFCreator\GS9.05\gs9.05\Bin\') <> 1 Then $iRegError += 1
 	If RegWrite('HKCU\Software\PDFCreator\Profiles\' & $g_sPdfCreatorPrinter & '\Ghostscript', 'DirectoryGhostscriptFonts','REG_SZ','') <> 1 Then $iRegError += 1
 	If RegWrite('HKCU\Software\PDFCreator\Profiles\' & $g_sPdfCreatorPrinter & '\Ghostscript', 'DirectoryGhostscriptLibraries','REG_SZ','C:\' & $sProgramFiles & '\PDFCreator\GS9.05\gs9.05\Lib\') <> 1 Then $iRegError += 1
 	If RegWrite('HKCU\Software\PDFCreator\Profiles\' & $g_sPdfCreatorPrinter & '\Ghostscript', 'DirectoryGhostscriptResource','REG_SZ','') <> 1 Then $iRegError += 1
